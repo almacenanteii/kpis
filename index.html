@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>KPI Almacén 2026</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:wght@300;400;500;600&display=swap');
+
+  :root {
+    --orange: #E8671A;
+    --orange-light: #F5813A;
+    --orange-dark: #C4530E;
+    --gray-900: #1A1A1A;
+    --gray-800: #2C2C2C;
+    --gray-700: #3D3D3D;
+    --gray-600: #5A5A5A;
+    --gray-400: #9A9A9A;
+    --gray-200: #E8E8E8;
+    --gray-100: #F5F5F5;
+    --white: #FFFFFF;
+    --green: #2ECC71;
+    --red: #E74C3C;
+    --yellow: #F39C12;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    font-family: 'Barlow', sans-serif;
+    background: var(--gray-100);
+    color: var(--gray-900);
+    min-height: 100vh;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+
+  /* HEADER */
+  .header {
+    background: var(--gray-900);
+    padding: 20px 16px 16px;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    top: -30px; right: -30px;
+    width: 130px; height: 130px;
+    border-radius: 50%;
+    background: var(--orange);
+    opacity: 0.10;
+  }
+  .header-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--orange);
+    margin-bottom: 4px;
+  }
+  .header-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--white);
+    line-height: 1.1;
+  }
+  .header-sub {
+    font-size: 12px;
+    color: var(--gray-400);
+    margin-top: 4px;
+  }
+  .employee-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--orange);
+    color: var(--white);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-top: 10px;
+  }
+  .employee-chip span { opacity: 0.8; font-weight: 400; font-size: 11px; }
+
+  /* SCORES */
+  .scores-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    padding: 14px 16px;
+    background: var(--gray-900);
+  }
+  .score-card {
+    background: var(--gray-800);
+    border-radius: 12px;
+    padding: 12px 14px;
+    border-left: 3px solid var(--orange);
+  }
+  .score-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--gray-400);
+    margin-bottom: 4px;
+  }
+  .score-value {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 30px;
+    font-weight: 800;
+    color: var(--white);
+    line-height: 1;
+  }
+  .score-meta { font-size: 10px; color: var(--gray-400); margin-top: 3px; }
+  .score-bar { height: 3px; background: var(--gray-700); border-radius: 2px; margin-top: 8px; overflow: hidden; }
+  .score-bar-fill { height: 100%; border-radius: 2px; background: var(--orange); transition: width 1.2s ease; }
+
+  /* PERSONAL STATS */
+  .section { padding: 14px 16px 0; }
+  .section-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--gray-600);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section-title::after { content: ''; flex: 1; height: 1px; background: var(--gray-200); }
+
+  .stats-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 16px; }
+  .stat-card {
+    background: var(--white);
+    border-radius: 12px;
+    padding: 12px 8px;
+    text-align: center;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    border-top: 3px solid var(--gray-200);
+  }
+  .stat-card.vac { border-top-color: var(--orange); }
+  .stat-card.fal { border-top-color: var(--red); }
+  .stat-card.pun { border-top-color: var(--green); }
+  .stat-icon { font-size: 18px; margin-bottom: 4px; }
+  .stat-number {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 26px;
+    font-weight: 800;
+    line-height: 1;
+  }
+  .stat-number.org { color: var(--orange); }
+  .stat-number.red { color: var(--red); }
+  .stat-number.grn { color: var(--green); }
+  .stat-name { font-size: 10px; color: var(--gray-400); font-weight: 500; margin-top: 3px; line-height: 1.2; }
+
+  /* MONTH BLOCK */
+  .month-block {
+    background: var(--white);
+    border-radius: 14px;
+    overflow: hidden;
+    margin-bottom: 14px;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.07);
+  }
+  .month-header {
+    background: var(--orange);
+    padding: 10px 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .month-name {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 15px;
+    font-weight: 800;
+    color: var(--white);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .month-total-badge {
+    background: rgba(255,255,255,0.22);
+    color: var(--white);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 17px;
+    font-weight: 800;
+    padding: 2px 10px;
+    border-radius: 20px;
+  }
+
+  .weeks-header {
+    display: grid;
+    grid-template-columns: 1fr repeat(4, 48px);
+    background: var(--gray-100);
+    border-bottom: 1px solid var(--gray-200);
+    padding: 6px 12px;
+  }
+  .wh { font-size: 9px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; color: var(--gray-400); }
+  .wh.c { text-align: center; }
+
+  .ind-row {
+    display: grid;
+    grid-template-columns: 1fr repeat(4, 48px);
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--gray-100);
+    align-items: center;
+  }
+  .ind-row:last-of-type { border-bottom: none; }
+  .ind-row:nth-child(even) { background: #FAFAFA; }
+  .ind-name { font-size: 11px; font-weight: 500; color: var(--gray-700); line-height: 1.3; padding-right: 6px; }
+  .ind-meta { font-size: 9px; color: var(--orange); font-weight: 600; }
+  .wk { text-align: center; font-family: 'Barlow Condensed', sans-serif; font-size: 14px; font-weight: 700; color: var(--gray-700); }
+  .wk.em { color: var(--gray-300); font-size: 11px; }
+  .wk.hi { color: var(--green); }
+  .wk.lo { color: var(--red); }
+
+  .total-row {
+    display: grid;
+    grid-template-columns: 1fr repeat(4, 48px);
+    padding: 9px 12px;
+    background: var(--gray-900);
+    align-items: center;
+  }
+  .total-lbl {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--white);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .total-val { text-align: center; font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 700; color: var(--orange); }
+  .total-val.z { color: var(--gray-600); }
+
+  .meta-row {
+    display: grid;
+    grid-template-columns: 1fr repeat(4, 48px);
+    padding: 5px 12px;
+    background: var(--gray-100);
+  }
+  .meta-t { font-size: 9px; color: var(--gray-400); font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; }
+  .meta-v { text-align: center; font-size: 10px; font-weight: 700; color: var(--green); }
+
+  /* LOADING */
+  .loading {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--gray-400);
+    font-size: 13px;
+  }
+  .spinner {
+    width: 28px; height: 28px;
+    border: 3px solid var(--gray-200);
+    border-top-color: var(--orange);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 12px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .error-box {
+    background: #fff3f3;
+    border: 1px solid #fcc;
+    border-radius: 10px;
+    padding: 14px;
+    margin: 16px;
+    font-size: 12px;
+    color: var(--red);
+    text-align: center;
+  }
+
+  .footer {
+    text-align: center;
+    padding: 16px;
+    font-size: 10px;
+    color: var(--gray-400);
+    letter-spacing: 0.5px;
+  }
+  .footer strong { color: var(--orange); }
+
+  .updated-tag {
+    background: var(--gray-800);
+    color: var(--gray-400);
+    font-size: 10px;
+    text-align: center;
+    padding: 6px;
+    letter-spacing: 0.5px;
+  }
+  .updated-tag strong { color: var(--orange); }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-label">Seguimiento de Desempeño</div>
+  <div class="header-title">KPI Almacén 2026</div>
+  <div class="header-sub">Seguimiento semanal</div>
+  <div class="employee-chip" id="chip-name">⏳ Cargando... <span id="chip-rol"></span></div>
+</div>
+
+<!-- SCORE CARDS -->
+<div class="scores-row">
+  <div class="score-card">
+    <div class="score-label">Total Almacén</div>
+    <div class="score-value" id="score-almacen">—</div>
+    <div class="score-meta">Meta: 95%</div>
+    <div class="score-bar"><div class="score-bar-fill" id="bar-almacen" style="width:0%"></div></div>
+  </div>
+  <div class="score-card">
+    <div class="score-label">Mi Puntaje</div>
+    <div class="score-value" id="score-mi">—</div>
+    <div class="score-meta">Meta: 95%</div>
+    <div class="score-bar"><div class="score-bar-fill" id="bar-mi" style="width:0%"></div></div>
+  </div>
+</div>
+
+<div class="updated-tag" id="updated-tag">Cargando datos...</div>
+
+<!-- PERSONAL STATS -->
+<div class="section">
+  <div class="section-title">Mi Situación</div>
+  <div class="stats-grid">
+    <div class="stat-card vac">
+      <div class="stat-icon">🏖️</div>
+      <div class="stat-number org" id="stat-vac">—</div>
+      <div class="stat-name">Días vacaciones restantes</div>
+    </div>
+    <div class="stat-card fal">
+      <div class="stat-icon">📋</div>
+      <div class="stat-number red" id="stat-fal">—</div>
+      <div class="stat-name">Faltas en el año</div>
+    </div>
+    <div class="stat-card pun">
+      <div class="stat-icon">⏱️</div>
+      <div class="stat-number grn" id="stat-pun">—</div>
+      <div class="stat-name">Puntualidad mensual</div>
+    </div>
+  </div>
+</div>
+
+<!-- MESES -->
+<div class="section" id="meses-container">
+  <div class="section-title">Indicadores por Mes</div>
+  <div class="loading" id="loading-msg">
+    <div class="spinner"></div>
+    Cargando datos del servidor...
+  </div>
+</div>
+
+<div class="footer">
+  Actualizado por <strong>Almacén SAI</strong> · KPI 2026
+</div>
+
+<script>
+const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSRVxK0x8kXSP4QmReaMT52vBR71mHfpsmH8aShvklRSa13FU5evETPDJ7Pi4VtFHAxFLN6Ip_rBCEJ/pub?gid=1555236539&single=true&output=csv';
+
+const MESES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+
+function parseCSV(text) {
+  const rows = [];
+  const lines = text.split('\n');
+  for (const line of lines) {
+    const row = [];
+    let cur = '', inQ = false;
+    for (let i = 0; i < line.length; i++) {
+      const c = line[i];
+      if (c === '"') { inQ = !inQ; }
+      else if (c === ',' && !inQ) { row.push(cur.trim()); cur = ''; }
+      else { cur += c; }
+    }
+    row.push(cur.trim());
+    rows.push(row);
+  }
+  return rows;
+}
+
+function val(v) {
+  if (!v || v === '' || v === '0' || v === '0.00') return null;
+  return v;
+}
+
+function colorClass(num) {
+  if (num === null || num === undefined || num === '') return 'em';
+  const n = parseFloat(num);
+  if (isNaN(n)) return 'wk';
+  if (n >= 95) return 'hi';
+  if (n < 70) return 'lo';
+  return 'wk';
+}
+
+function fmtNum(v) {
+  if (v === null || v === undefined || v === '') return '—';
+  const n = parseFloat(v);
+  if (isNaN(n)) return v;
+  return n % 1 === 0 ? n.toString() : n.toFixed(2);
+}
+
+function buildMonthBlock(mesNombre, semanas, indicadores) {
+  // Find the last non-zero total
+  const totals = semanas.map(s => s.total);
+  const lastTotal = totals.filter(t => t && parseFloat(t) > 0).pop();
+  const displayTotal = lastTotal ? parseFloat(lastTotal).toFixed(2) : '0.00';
+  const hasData = totals.some(t => t && parseFloat(t) > 0);
+
+  let html = `<div class="month-block">
+    <div class="month-header">
+      <div class="month-name">📅 ${mesNombre}</div>
+      <div class="month-total-badge">${displayTotal}</div>
+    </div>
+    <div class="weeks-header">
+      <div class="wh">Indicador</div>`;
+  semanas.forEach(s => { html += `<div class="wh c">${s.label}</div>`; });
+  html += `</div>`;
+
+  indicadores.forEach(ind => {
+    html += `<div class="ind-row">
+      <div class="ind-name">${ind.nombre}<br><span class="ind-meta">${ind.meta}</span></div>`;
+    semanas.forEach((s, i) => {
+      const v = ind.valores[i];
+      const hasVal = v !== null && v !== '' && v !== undefined;
+      if (!hasVal) {
+        html += `<div class="wk em">—</div>`;
+      } else {
+        const cls = colorClass(v);
+        html += `<div class="wk ${cls}">${fmtNum(v)}</div>`;
+      }
+    });
+    html += `</div>`;
+  });
+
+  html += `<div class="total-row"><div class="total-lbl">Total</div>`;
+  semanas.forEach(s => {
+    const hasV = s.total && parseFloat(s.total) > 0;
+    html += `<div class="total-val ${hasV ? '' : 'z'}">${hasV ? parseFloat(s.total).toFixed(2) : '—'}</div>`;
+  });
+  html += `</div>`;
+
+  html += `<div class="meta-row"><div class="meta-t">Meta</div>`;
+  semanas.forEach(s => { html += `<div class="meta-v">97%</div>`; });
+  html += `</div></div>`;
+
+  return html;
+}
+
+async function loadData() {
+  try {
+    const resp = await fetch(CSV_URL);
+    if (!resp.ok) throw new Error('No se pudo conectar con Google Sheets');
+    const text = await resp.text();
+    const rows = parseCSV(text);
+
+    if (!rows || rows.length < 3) throw new Error('Datos insuficientes');
+
+    // --- Detectar estructura dinámica ---
+    // Buscar fila con nombre del empleado (fila 0 o 1, columna 0)
+    let empleado = '', rol = '';
+    let totalAlmacen = '', miPuntaje = '';
+    let vacaciones = '—', faltas = '—', puntualidad = '—';
+
+    for (let i = 0; i < Math.min(10, rows.length); i++) {
+      const r = rows[i];
+      // Buscar "KPI" en alguna celda
+      for (let j = 0; j < r.length; j++) {
+        const c = (r[j] || '').toString().toLowerCase();
+        if (c.includes('analista') || c.includes('supervisor') || c.includes('coordinador') || c.includes('almacenista')) {
+          rol = r[j];
+        }
+        if (c.includes('karla') || c.includes('plascencia') || (r[0] && r[0].length > 3 && i < 5 && j === 0 && !c.includes('kpi') && !c.includes('indicador') && !c.includes('meta'))) {
+          if (r[j] && !empleado && j === 0 && i > 0) empleado = r[j];
+        }
+      }
+      // Buscar totales numéricos grandes en cols B y D
+      if (r[1] && parseFloat(r[1]) > 10 && parseFloat(r[1]) <= 100 && !totalAlmacen) totalAlmacen = r[1];
+      if (r[3] && parseFloat(r[3]) > 10 && parseFloat(r[3]) <= 100 && !miPuntaje) miPuntaje = r[3];
+    }
+
+    // Fallback: leer celdas directas conocidas
+    if (rows[1] && rows[1][1]) { const v = parseFloat(rows[1][1]); if (!isNaN(v) && v > 0) totalAlmacen = rows[1][1]; }
+    if (rows[1] && rows[1][3]) { const v = parseFloat(rows[1][3]); if (!isNaN(v) && v > 0) miPuntaje = rows[1][3]; }
+    if (rows[0] && rows[0][3]) empleado = rows[0][3];
+    if (rows[2] && rows[2][3]) rol = rows[2][3];
+
+    // Buscar vacaciones/faltas/puntualidad
+    for (let i = 0; i < rows.length; i++) {
+      const r = rows[i];
+      for (let j = 0; j < r.length; j++) {
+        const c = (r[j] || '').toLowerCase();
+        if (c.includes('vacacion')) vacaciones = r[j+1] || r[j+2] || vacaciones;
+        if (c.includes('falta') && !c.includes('incidencia')) faltas = r[j+1] || r[j+2] || faltas;
+        if (c.includes('puntualidad')) puntualidad = r[j+1] || r[j+2] || puntualidad;
+      }
+    }
+
+    // --- Poblar header ---
+    document.getElementById('chip-name').innerHTML = `👤 ${empleado || 'Empleado'} <span>${rol || ''}</span>`;
+    
+    const almNum = parseFloat(totalAlmacen) || 0;
+    const miNum = parseFloat(miPuntaje) || 0;
+    document.getElementById('score-almacen').textContent = almNum > 0 ? almNum.toFixed(2) : '—';
+    document.getElementById('score-mi').textContent = miNum > 0 ? miNum.toFixed(2) : '—';
+    document.getElementById('bar-almacen').style.width = (almNum > 0 ? Math.min(almNum, 100) : 0) + '%';
+    document.getElementById('bar-mi').style.width = (miNum > 0 ? Math.min(miNum, 100) : 0) + '%';
+
+    document.getElementById('stat-vac').textContent = vacaciones !== '—' ? vacaciones : '—';
+    document.getElementById('stat-fal').textContent = faltas !== '—' ? faltas : '—';
+    document.getElementById('stat-pun').textContent = puntualidad !== '—' ? puntualidad : '—';
+
+    // --- Detectar meses y semanas dinámicamente ---
+    // Buscar filas que tengan nombre de mes en col 0 o en alguna celda fusionada
+    const mesesData = [];
+    let currentMes = null;
+    let currentIndicadores = [];
+    let currentSemanas = [];
+    let waitingHeader = false;
+
+    for (let i = 0; i < rows.length; i++) {
+      const r = rows[i];
+      const c0 = (r[0] || '').trim();
+      const c1 = (r[1] || '').trim();
+
+      // Detectar fila de mes (contiene nombre de mes)
+      const esMes = MESES.some(m => {
+        const combined = (r.join(' ')).toLowerCase();
+        return combined.includes(m.toLowerCase()) && combined.split(m.toLowerCase()).length === 2;
+      });
+
+      if (esMes) {
+        if (currentMes && currentIndicadores.length > 0) {
+          mesesData.push({ mes: currentMes, semanas: currentSemanas, indicadores: currentIndicadores });
+        }
+        currentMes = MESES.find(m => (r.join(' ')).toLowerCase().includes(m.toLowerCase()));
+        currentIndicadores = [];
+        currentSemanas = [];
+        waitingHeader = true;
+        continue;
+      }
+
+      // Detectar fila de encabezado de semanas (contiene "Indicador" o "Meta")
+      if (waitingHeader && (c0.toLowerCase().includes('indicador') || c1.toLowerCase().includes('indicador') || c0.toLowerCase().includes('meta'))) {
+        // Extraer labels de semana (columnas 2 en adelante, hasta 5 semanas)
+        currentSemanas = [];
+        for (let j = 2; j < Math.min(r.length, 7); j++) {
+          if (r[j] && r[j].trim()) currentSemanas.push({ label: r[j].trim(), total: null });
+        }
+        // Asegurar 4 semanas
+        while (currentSemanas.length < 4) currentSemanas.push({ label: '', total: null });
+        currentSemanas = currentSemanas.slice(0, 4);
+        waitingHeader = false;
+        continue;
+      }
+
+      // Detectar fila Total
+      if (c0.toLowerCase().includes('total') && currentMes) {
+        for (let j = 0; j < currentSemanas.length; j++) {
+          currentSemanas[j].total = r[j + 2] || null;
+        }
+        continue;
+      }
+
+      // Fila de indicador normal
+      if (currentMes && !waitingHeader && c0 && c0.length > 3 && !c0.toLowerCase().includes('kpi') && !c0.toLowerCase().includes('seguimiento')) {
+        const meta = r[1] || '';
+        const valores = [];
+        for (let j = 0; j < 4; j++) {
+          const v = r[j + 2];
+          valores.push((v === undefined || v === '' || v === '0') ? null : v);
+        }
+        currentIndicadores.push({ nombre: c0, meta, valores });
+      }
+    }
+
+    if (currentMes && currentIndicadores.length > 0) {
+      mesesData.push({ mes: currentMes, semanas: currentSemanas, indicadores: currentIndicadores });
+    }
+
+    // Renderizar meses
+    const container = document.getElementById('meses-container');
+    document.getElementById('loading-msg').remove();
+
+    if (mesesData.length === 0) {
+      container.innerHTML += `<div class="error-box">No se detectaron meses en el archivo.<br>Verifica que el Sheet esté publicado correctamente.</div>`;
+    } else {
+      mesesData.forEach(m => {
+        container.innerHTML += buildMonthBlock(m.mes, m.semanas, m.indicadores);
+      });
+    }
+
+    // Actualizado
+    const now = new Date();
+    document.getElementById('updated-tag').innerHTML = `Datos al <strong>${now.toLocaleDateString('es-MX', {day:'2-digit',month:'short',year:'numeric'})}</strong> · ${now.toLocaleTimeString('es-MX', {hour:'2-digit',minute:'2-digit'})}`;
+
+  } catch (err) {
+    document.getElementById('loading-msg').remove();
+    document.getElementById('meses-container').innerHTML += `
+      <div class="error-box">
+        ⚠️ Error al cargar datos<br><small>${err.message}</small><br><br>
+        <small>Verifica que el Sheet esté publicado en la web como CSV.</small>
+      </div>`;
+    document.getElementById('updated-tag').textContent = 'Error al conectar con Google Sheets';
+    console.error(err);
+  }
+}
+
+loadData();
+</script>
+</body>
+</html>
